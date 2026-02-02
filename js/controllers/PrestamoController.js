@@ -1,0 +1,87 @@
+// ===================================
+// CONTROLADOR: PRÉSTAMOS
+// ===================================
+
+// Controlador para gestionar las operaciones de préstamos
+
+export class PrestamoController {
+  constructor(bibliotecaService, prestamoView) {
+    this.bibliotecaService = bibliotecaService;
+    this.prestamoView = prestamoView;
+  }
+
+  // Inicializa el controlador
+  inicializar() {
+    this.prestamoView.onPrestarLibro((libroId, usuario, dias) => 
+      this.prestarLibro(libroId, usuario, dias)
+    );
+    this.prestamoView.onDevolverLibro((prestamoId) => 
+      this.devolverLibro(prestamoId)
+    );
+    
+    // Renderizar préstamos iniciales
+    this.mostrarPrestamos();
+  }
+
+  // Muestra todos los préstamos
+  mostrarPrestamos() {
+    const prestamos = this.bibliotecaService.prestamos;
+    this.prestamoView.renderizar(prestamos);
+  }
+
+  // Procesa un préstamo de libro
+  // @param {string} libroId - ID del libro
+  // @param {string} usuario - Nombre del usuario
+  // @param {number} dias - Días de préstamo
+  
+  async prestarLibro(libroId, usuario, dias) {
+    try {
+      this.bibliotecaService.notificacionService.info(
+        'Procesando',
+        'Procesando préstamo...'
+      );
+
+      const prestamo = await this.bibliotecaService.procesarPrestamo(libroId, usuario, dias);
+
+      this.bibliotecaService.notificacionService.success(
+        'Préstamo Realizado',
+        `El libro "${prestamo.libroTitulo}" ha sido prestado a ${usuario}.`
+      );
+
+      this.prestamoView.cerrarModal();
+      this.prestamoView.limpiarFormulario();
+      this.mostrarPrestamos();
+    } catch (error) {
+      this.bibliotecaService.notificacionService.error(
+        'Error',
+        error
+      );
+    }
+  }
+
+  // Procesa la devolución de un libro
+  // @param {string} prestamoId - ID del préstamo
+  
+  async devolverLibro(prestamoId) {
+    try {
+      this.bibliotecaService.notificacionService.info(
+        'Procesando',
+        'Procesando devolución...'
+      );
+
+      const prestamo = await this.bibliotecaService.procesarDevolucion(prestamoId);
+
+      this.bibliotecaService.notificacionService.success(
+        'Devolución Exitosa',
+        `El libro "${prestamo.libroTitulo}" ha sido devuelto.`
+      );
+
+      this.mostrarPrestamos();
+    } catch (error) {
+      this.bibliotecaService.notificacionService.error(
+        'Error',
+        error
+      );
+    }
+  }
+}

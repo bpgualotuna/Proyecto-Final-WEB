@@ -1,0 +1,246 @@
+// ===================================
+// CONTROLADOR PRINCIPAL DE LA APLICACIÓN
+// ===================================
+
+import { BibliotecaService } from '../services/BibliotecaService.js';
+import { LibroController } from './LibroController.js';
+import { PrestamoController } from './PrestamoController.js';
+import { ReservaController } from './ReservaController.js';
+import { LibroView } from '../views/LibroView.js';
+import { PrestamoView } from '../views/PrestamoView.js';
+import { ReservaView } from '../views/ReservaView.js';
+import { EstadisticaView } from '../views/EstadisticaView.js';
+import { librosIniciales, prestamosIniciales } from '../utils/datosIniciales.js';
+
+
+  // Controlador principal que coordina toda la aplicación
+ 
+export class AppController {
+  constructor() {
+    // Inicializar servicio
+    this.bibliotecaService = new BibliotecaService();
+    
+    // Inicializar vistas
+    this.libroView = new LibroView();
+    this.prestamoView = new PrestamoView();
+    this.reservaView = new ReservaView();
+    this.estadisticaView = new EstadisticaView();
+    
+    // Inicializar controladores
+    this.libroController = new LibroController(this.bibliotecaService, this.libroView);
+    this.prestamoController = new PrestamoController(this.bibliotecaService, this.prestamoView);
+    this.reservaController = new ReservaController(this.bibliotecaService, this.reservaView);
+    
+    this.seccionActual = 'libros';
+  }
+
+  // Inicializa la aplicación
+  inicializar() {
+    console.log('🚀 Iniciando Sistema de Biblioteca Digital...');
+    
+    // Cargar datos iniciales
+    this.cargarDatosIniciales();
+    
+    // Inicializar controladores
+    this.libroController.inicializar();
+    this.prestamoController.inicializar();
+    this.reservaController.inicializar();
+    
+    // Configurar navegación
+    this.configurarNavegacion();
+    
+    // Configurar notificaciones
+    this.configurarNotificaciones();
+    
+    // Configurar delegación de eventos para acciones de libros
+    this.configurarDelegacionEventos();
+    
+    // Iniciar verificación de préstamos
+    setTimeout(() => {
+      this.bibliotecaService.iniciarVerificacionPrestamos();
+    }, 1000);
+    
+    // Actualizar estadísticas
+    this.actualizarEstadisticas();
+    
+    // Mostrar notificación de bienvenida
+    setTimeout(() => {
+      this.bibliotecaService.notificacionService.success(
+        '¡Bienvenido!',
+        'Sistema de Biblioteca Digital iniciado correctamente.'
+      );
+    }, 500);
+    
+    console.log('✅ Sistema iniciado correctamente');
+  }
+
+  // Carga los datos iniciales en la biblioteca
+  cargarDatosIniciales() {
+    // Agregar libros iniciales
+    librosIniciales.forEach(libroData => {
+      this.bibliotecaService.agregarLibro(libroData);
+    });
+
+    // Crear préstamos iniciales
+    prestamosIniciales.forEach(async (prestamoData, index) => {
+      const libro = this.bibliotecaService.libros.find(
+        l => l.titulo === prestamoData.libroTitulo
+      );
+      
+      if (libro) {
+        // Simular préstamo sin notificación
+        try {
+          await this.bibliotecaService.procesarPrestamo(
+            libro.id,
+            prestamoData.usuario,
+            prestamoData.dias
+          );
+        } catch (error) {
+          console.error('Error al crear préstamo inicial:', error);
+        }
+      }
+    });
+  }
+
+  // Configura la navegación entre secciones
+  configurarNavegacion() {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const seccion = btn.getAttribute('data-section');
+        this.cambiarSeccion(seccion);
+      });
+    });
+  }
+
+  // Cambia la sección activa
+  cambiarSeccion(seccion) {
+    // Actualizar navegación
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-section') === seccion) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Actualizar secciones
+    document.querySelectorAll('.section').forEach(sec => {
+      sec.classList.remove('active');
+    });
+    document.getElementById(`section-${seccion}`).classList.add('active');
+
+    this.seccionActual = seccion;
+
+    // Renderizar contenido según sección
+    switch(seccion) {
+      case 'libros':
+        this.libroController.mostrarLibros();
+        break;
+      case 'prestamos':
+        this.prestamoController.mostrarPrestamos();
+        break;
+      case 'reservas':
+        this.reservaController.mostrarReservas();
+        break;
+      case 'estadisticas':
+        this.actualizarEstadisticas();
+        break;
+    }
+  }
+
+  // Configura el sistema de notificaciones
+  configurarNotificaciones() {
+    const container = document.getElementById('notification-container');
+    
+    this.bibliotecaService.notificacionService.onNotificacion((notificacion) => {
+      this.renderizarNotificacion(notificacion, container);
+    });
+  }
+
+  // Renderiza una notificación en el DOM
+  renderizarNotificacion(notificacion, container) {
+    const notifElement = document.createElement('div');
+    notifElement.className = `notification ${notificacion.tipo}`;
+    notifElement.id = `notif-${notificacion.id}`;
+    notifElement.innerHTML = `
+      <div class="notification-header">
+        <span class="notification-title">${notificacion.titulo}</span>
+        <button class="notification-close" data-notif-id="${notificacion.id}">&times;</button>
+      </div>
+      <p class="notification-message">${notificacion.mensaje}</p>
+    `;
+
+    // Agregar evento de cierre
+    const closeBtn = notifElement.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+      this.cerrarNotificacion(notificacion.id);
+    });
+
+    container.appendChild(notifElement);
+
+    // Auto-cerrar después de 5 segundos
+    setTimeout(() => {
+      this.cerrarNotificacion(notificacion.id);
+    }, 5000);
+  }
+
+  // Cierra una notificación
+  cerrarNotificacion(id) {
+    const notifElement = document.getElementById(`notif-${id}`);
+    if (notifElement) {
+      notifElement.style.animation = 'slideInRight 0.3s ease reverse';
+      setTimeout(() => {
+        notifElement.remove();
+        this.bibliotecaService.notificacionService.eliminar(id);
+      }, 300);
+    }
+  }
+
+  // Configura la delegación de eventos para acciones de libros
+  configurarDelegacionEventos() {
+    const grid = document.getElementById('libros-grid');
+    
+    grid.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const id = button.dataset.id;
+
+      switch (action) {
+        case 'eliminar':
+          this.libroController.eliminarLibro(id);
+          this.actualizarEstadisticas();
+          break;
+        case 'prestar':
+          this.prestamoView.abrirModal(id);
+          break;
+        case 'reservar':
+          this.reservaView.abrirModal(id);
+          break;
+      }
+    });
+
+    // Delegación para préstamos
+    const prestamosList = document.getElementById('prestamos-list');
+    prestamosList.addEventListener('click', (e) => {
+      this.prestamoView.handleAccion(e);
+      this.actualizarEstadisticas();
+      this.libroController.mostrarLibros();
+    });
+
+    // Delegación para reservas
+    const reservasList = document.getElementById('reservas-list');
+    reservasList.addEventListener('click', (e) => {
+      this.reservaView.handleAccion(e);
+      this.actualizarEstadisticas();
+    });
+  }
+
+  // Actualiza las estadísticas
+  actualizarEstadisticas() {
+    const stats = this.bibliotecaService.obtenerEstadisticas();
+    this.estadisticaView.renderizar(stats);
+  }
+}
