@@ -1,10 +1,4 @@
-// ===================================
-// VISTA: PRÉSTAMOS
-// ===================================
-
 import { formatearFecha, sanitizarString } from '../utils/helpers.js';
-
-// Vista para la gestión de préstamos
 
 export class PrestamoView {
   constructor() {
@@ -13,7 +7,7 @@ export class PrestamoView {
     this.contadorVencidos = document.getElementById('prestamos-vencidos');
     this.modal = document.getElementById('modal-prestar-libro');
     this.form = document.getElementById('form-prestar-libro');
-    
+
     this.callbacks = {
       onPrestarLibro: null,
       onDevolverLibro: null
@@ -22,16 +16,11 @@ export class PrestamoView {
     this.inicializarEventos();
   }
 
-  // Inicializa los eventos de la vista
-  
   inicializarEventos() {
-    // Formulario
     this.form.addEventListener('submit', (e) => {
       e.preventDefault();
       this.handlePrestarLibro();
     });
-
-    // Cerrar modal
     this.modal.addEventListener('click', (e) => {
       if (e.target === this.modal) {
         this.cerrarModal();
@@ -44,22 +33,14 @@ export class PrestamoView {
     });
   }
 
-  // Registra callback para prestar libro
-  // @param {Function} callback - Función a ejecutar
-  
   onPrestarLibro(callback) {
     this.callbacks.onPrestarLibro = callback;
   }
 
-  // Registra callback para devolver libro
-  // @param {Function} callback - Función a ejecutar
-  
   onDevolverLibro(callback) {
     this.callbacks.onDevolverLibro = callback;
   }
 
-  // Maneja el evento de prestar libro
-  
   handlePrestarLibro() {
     const libroId = document.getElementById('prestamo-libro-id').value;
     const usuario = document.getElementById('prestamo-usuario').value;
@@ -70,9 +51,6 @@ export class PrestamoView {
     }
   }
 
-  // Maneja clicks en las acciones de préstamos
-  // @param {Event} e - Evento de click
-  
   handleAccion(e) {
     const button = e.target.closest('[data-action="devolver"]');
     if (!button) return;
@@ -83,14 +61,10 @@ export class PrestamoView {
     }
   }
 
-  // Renderiza la lista de préstamos
-  // @param {Array<Prestamo>} prestamos - Préstamos a renderizar
-  
   renderizar(prestamos) {
-    // Actualizar contadores
     const activos = prestamos.filter(p => !p.estaVencido()).length;
     const vencidos = prestamos.filter(p => p.estaVencido()).length;
-    
+
     this.contadorActivos.textContent = activos;
     this.contadorVencidos.textContent = vencidos;
 
@@ -108,17 +82,15 @@ export class PrestamoView {
     this.lista.innerHTML = prestamos.map(prestamo => this.renderizarPrestamoCard(prestamo)).join('');
   }
 
-  // Renderiza una tarjeta de préstamo
-  // @param {Prestamo} prestamo - Préstamo a renderizar
-  // @returns {string} HTML de la tarjeta
-  
+
+
   renderizarPrestamoCard(prestamo) {
     const titulo = sanitizarString(prestamo.libroTitulo);
     const usuario = sanitizarString(prestamo.usuario);
     const diasRestantes = prestamo.getDiasRestantes();
-    
+
     const textoEstado = prestamo.estaVencido() ? 'Vencido' :
-                       prestamo.estaProximoVencer() ? 'Próximo a vencer' : 'Activo';
+      prestamo.estaProximoVencer() ? 'Próximo a vencer' : 'Activo';
 
     return `
       <div class="prestamo-card">
@@ -144,24 +116,15 @@ export class PrestamoView {
     `;
   }
 
-  // Abre el modal de prestar libro
-  // @param {string} libroId - ID del libro
-  
   abrirModal(libroId) {
     document.getElementById('prestamo-libro-id').value = libroId;
     this.modal.classList.add('active');
   }
 
-  
-    //Cierra el modal de prestar libro
-   
   cerrarModal() {
     this.modal.classList.remove('active');
   }
 
-  
-   // Limpia el formulario
-   
   limpiarFormulario() {
     this.form.reset();
   }

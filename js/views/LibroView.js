@@ -1,10 +1,4 @@
-// ===================================
-// VISTA: LIBROS
-// ===================================
-
 import { sanitizarString } from '../utils/helpers.js';
-
-// Vista para la gestión de libros
 
 export class LibroView {
   constructor() {
@@ -15,7 +9,7 @@ export class LibroView {
     this.btnAgregar = document.getElementById('btn-agregar-libro');
     this.modal = document.getElementById('modal-agregar-libro');
     this.form = document.getElementById('form-agregar-libro');
-    
+
     this.callbacks = {
       onAgregarLibro: null,
       onEliminarLibro: null,
@@ -27,24 +21,15 @@ export class LibroView {
     this.inicializarEventos();
   }
 
-  // Inicializa los eventos de la vista
-  
   inicializarEventos() {
-    // Botón agregar
     this.btnAgregar.addEventListener('click', () => this.abrirModal());
-
-    // Formulario
     this.form.addEventListener('submit', (e) => {
       e.preventDefault();
       this.handleAgregarLibro();
     });
-
-    // Búsqueda y filtros
     this.searchInput.addEventListener('input', () => this.handleBuscar());
     this.filterGenero.addEventListener('change', () => this.handleBuscar());
     this.filterDisponibilidad.addEventListener('change', () => this.handleBuscar());
-
-    // Cerrar modal
     this.modal.addEventListener('click', (e) => {
       if (e.target === this.modal) {
         this.cerrarModal();
@@ -57,44 +42,26 @@ export class LibroView {
     });
   }
 
-  // Registra callback para agregar libro
-  // @param {Function} callback - Función a ejecutar
-  
   onAgregarLibro(callback) {
     this.callbacks.onAgregarLibro = callback;
   }
 
-  // Registra callback para eliminar libro
-  // @param {Function} callback - Función a ejecutar
-  
   onEliminarLibro(callback) {
     this.callbacks.onEliminarLibro = callback;
   }
 
-  // Registra callback para buscar
-  // @param {Function} callback - Función a ejecutar
-  
   onBuscar(callback) {
     this.callbacks.onBuscar = callback;
   }
 
-  // Registra callback para prestar libro
-  // @param {Function} callback - Función a ejecutar
-  
   onPrestarLibro(callback) {
     this.callbacks.onPrestarLibro = callback;
   }
 
-  // Registra callback para reservar libro
-  // @param {Function} callback - Función a ejecutar
-  
   onReservarLibro(callback) {
     this.callbacks.onReservarLibro = callback;
   }
 
-  
-  // Maneja el evento de agregar libro
-   
   handleAgregarLibro() {
     const datosLibro = {
       titulo: document.getElementById('libro-titulo').value,
@@ -108,8 +75,6 @@ export class LibroView {
     }
   }
 
-  // Maneja el evento de búsqueda
-  
   handleBuscar() {
     const termino = this.searchInput.value;
     const genero = this.filterGenero.value;
@@ -120,9 +85,6 @@ export class LibroView {
     }
   }
 
-  // Renderiza la lista de libros
-  // @param {Array<Libro>} libros - Libros a renderizar
-  
   renderizar(libros) {
     if (libros.length === 0) {
       this.grid.innerHTML = `
@@ -138,10 +100,6 @@ export class LibroView {
     this.grid.innerHTML = libros.map(libro => this.renderizarLibroCard(libro)).join('');
   }
 
-  // Renderiza una tarjeta de libro
-  // @param {Libro} libro - Libro a renderizar
-  // @returns {string} HTML de la tarjeta
-  
   renderizarLibroCard(libro) {
     const titulo = sanitizarString(libro.titulo);
     const autor = sanitizarString(libro.autor);
@@ -181,9 +139,6 @@ export class LibroView {
     `;
   }
 
-  // Maneja clicks en las acciones de los libros
-  // @param {Event} e - Evento de click
-  
   handleAccion(e) {
     const button = e.target.closest('[data-action]');
     if (!button) return;
@@ -210,20 +165,14 @@ export class LibroView {
     }
   }
 
-  // Abre el modal de agregar libro
-  
   abrirModal() {
     this.modal.classList.add('active');
   }
 
-  // Cierra el modal de agregar libro
-  
   cerrarModal() {
     this.modal.classList.remove('active');
   }
 
-  // Limpia el formulario
-  
   limpiarFormulario() {
     this.form.reset();
   }

@@ -1,10 +1,4 @@
-// ===================================
-// VISTA: ESTADÍSTICAS
-// ===================================
-
 import { calcularPorcentaje } from '../utils/helpers.js';
-
-// Vista para mostrar estadísticas de la biblioteca
 
 export class EstadisticaView {
   constructor() {
@@ -15,9 +9,6 @@ export class EstadisticaView {
     this.generosChart = document.getElementById('generos-chart');
   }
 
-  // Renderiza las estadísticas
-  // @param {Object} stats - Objeto con las estadísticas
-  
   renderizar(stats) {
     this.statTotalLibros.textContent = stats.totalLibros;
     this.statDisponibles.textContent = stats.disponibles;
@@ -27,9 +18,6 @@ export class EstadisticaView {
     this.renderizarGraficoGeneros(stats.librosPorGenero);
   }
 
-  // Renderiza el gráfico de libros por género
-  // @param {Object} librosPorGenero - Objeto con cantidad de libros por género
-  
   renderizarGraficoGeneros(librosPorGenero) {
     const total = Object.values(librosPorGenero).reduce((sum, val) => sum + val, 0);
 

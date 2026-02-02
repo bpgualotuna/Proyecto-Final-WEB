@@ -1,5 +1,5 @@
 /* ===================================
-   VARIABLES Y TOKENS DE DISEÑO
+  VARIABLES Y TOKENS DE DISEÑO
    =================================== */
 :root {
   /* Colores principales */
@@ -92,30 +92,26 @@ body::before {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(
-      circle at 20% 50%,
+    radial-gradient(circle at 20% 50%,
       rgba(102, 126, 234, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 80%,
+      transparent 50%),
+    radial-gradient(circle at 80% 80%,
       rgba(118, 75, 162, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 40% 20%,
+      transparent 50%),
+    radial-gradient(circle at 40% 20%,
       rgba(240, 147, 251, 0.05) 0%,
-      transparent 50%
-    );
+      transparent 50%);
   z-index: -1;
   animation: gradientShift 15s ease infinite;
 }
 
 @keyframes gradientShift {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -239,6 +235,7 @@ body::before {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -869,6 +866,7 @@ body::before {
     opacity: 0;
     transform: translateY(50px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1020,6 +1018,7 @@ body::before {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1182,12 +1181,15 @@ body::before {
 .mt-1 {
   margin-top: var(--spacing-xs);
 }
+
 .mt-2 {
   margin-top: var(--spacing-sm);
 }
+
 .mt-3 {
   margin-top: var(--spacing-md);
 }
+
 .mt-4 {
   margin-top: var(--spacing-lg);
 }
@@ -1195,12 +1197,15 @@ body::before {
 .mb-1 {
   margin-bottom: var(--spacing-xs);
 }
+
 .mb-2 {
   margin-bottom: var(--spacing-sm);
 }
+
 .mb-3 {
   margin-bottom: var(--spacing-md);
 }
+
 .mb-4 {
   margin-bottom: var(--spacing-lg);
 }
