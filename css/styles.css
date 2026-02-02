@@ -214,7 +214,7 @@ body::before {
 }
 
 /* ===================================
-   MAIN CONTENT
+  MAIN CONTENT
    =================================== */
 .main {
   padding: var(--spacing-xl) 0;
@@ -267,7 +267,7 @@ body::before {
 }
 
 /* ===================================
-   BOTONES
+  BOTONES
    =================================== */
 .btn {
   display: inline-flex;
@@ -344,7 +344,7 @@ body::before {
 }
 
 /* ===================================
-   BÚSQUEDA Y FILTROS
+  BÚSQUEDA Y FILTROS
    =================================== */
 .search-filters {
   display: flex;
