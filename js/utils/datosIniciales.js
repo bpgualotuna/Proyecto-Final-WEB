@@ -21,7 +21,7 @@ export const librosIniciales = [
     genero: "Historia",
     descripcion:
       "Una breve historia de la humanidad desde la Edad de Piedra hasta el presente.",
-    disponible: false,
+    disponible: true,
   },
   {
     titulo: "1984",
@@ -37,7 +37,7 @@ export const librosIniciales = [
     genero: "Fantasía",
     descripcion:
       "Una épica aventura en la Tierra Media llena de magia y heroísmo.",
-    disponible: false,
+    disponible: true,
   },
   {
     titulo: "Breve Historia del Tiempo",

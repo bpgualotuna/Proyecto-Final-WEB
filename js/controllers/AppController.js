@@ -35,11 +35,11 @@ export class AppController {
   }
 
   // Inicializa la aplicación
-  inicializar() {
+  async inicializar() {
     console.log('🚀 Iniciando Sistema de Biblioteca Digital...');
     
-    // Cargar datos iniciales
-    this.cargarDatosIniciales();
+    // Cargar datos iniciales (esperar a que terminen los préstamos)
+    await this.cargarDatosIniciales();
     
     // Inicializar controladores
     this.libroController.inicializar();
@@ -75,14 +75,14 @@ export class AppController {
   }
 
   // Carga los datos iniciales en la biblioteca
-  cargarDatosIniciales() {
+  async cargarDatosIniciales() {
     // Agregar libros iniciales
     librosIniciales.forEach(libroData => {
       this.bibliotecaService.agregarLibro(libroData);
     });
 
-    // Crear préstamos iniciales
-    prestamosIniciales.forEach(async (prestamoData, index) => {
+    // Crear préstamos iniciales - usar Promise.all para esperar a todos
+    const promesasPrestamos = prestamosIniciales.map(async (prestamoData) => {
       const libro = this.bibliotecaService.libros.find(
         l => l.titulo === prestamoData.libroTitulo
       );
@@ -100,6 +100,9 @@ export class AppController {
         }
       }
     });
+
+    // Esperar a que todos los préstamos se procesen
+    await Promise.all(promesasPrestamos);
   }
 
   // Configura la navegación entre secciones
